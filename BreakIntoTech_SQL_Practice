@@ -7,3 +7,41 @@ LEFT JOIN BIT_DB.customers cust
 WHERE Feb.Quantity > 2
     AND LENGTH(orderid) = 6
     AND orderid <> 'Order ID';
+
+customer revenue
+278	13.83
+
+
+---------------
+
+SELECT DISTINCT product, SUM(quantity) as total
+FROM FebSales
+WHERE location LIKE '%Los Angeles%'
+GROUP BY product
+ORDER BY total DESC
+;
+
+product total
+AAA Batteries (4-pack)	351
+AA Batteries (4-pack)	293
+USB-C Charging Cable	271
+Lightning Charging Cable	243
+Wired Headphones	191
+Apple Airpods Headphones	140
+Bose SoundSport Headphones	131
+27in FHD Monitor	81
+iPhone	71
+27in 4K Gaming Monitor	70
+34in Ultrawide Monitor	63
+Google Phone	52
+Macbook Pro Laptop	46
+20in Monitor	44
+ThinkPad Laptop	42
+Flatscreen TV	36
+Vareebadd Phone	25
+LG Washing Machine	6
+LG Dryer	5
+
+
+---------------
+

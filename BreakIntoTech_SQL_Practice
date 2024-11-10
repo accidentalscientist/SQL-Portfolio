@@ -102,13 +102,44 @@ quantity per account
 
 ---------------
 
-SELECT product,
-        SUM(quantity) * price AS total_revenue
+SELECT product, 
+       SUM(quantity * price) AS total_revenue
 FROM JanSales
+GROUP BY product
+ORDER BY total_revenue DESC
+LIMIT 1
 ;
 
 product total revenue
-iPhone	7607600
+Macbook Pro Laptop	399500
 
 ---------------
 
+SELECT product, 
+       ROUND(SUM(quantity * price)) AS total_revenue
+FROM JanSales
+GROUP BY product
+HAVING total_revenue > 0
+ORDER BY total_revenue DESC
+;
+
+product total revenue
+Macbook Pro Laptop	399500
+iPhone	265300
+ThinkPad Laptop	216998
+Google Phone	190800
+Apple Airpods Headphones	122100
+27in 4K Gaming Monitor	121677
+34in Ultrawide Monitor	119317
+Flatscreen TV	72900
+Bose SoundSport Headphones	65893
+27in FHD Monitor	62846
+Vareebadd Phone	50000
+LG Washing Machine	25200
+20in Monitor	23648
+LG Dryer	23400
+Lightning Charging Cable	17207
+USB-C Charging Cable	15344
+Wired Headphones	12961
+AA Batteries (4-pack)	5472
+AAA Batteries (4-pack)	4772

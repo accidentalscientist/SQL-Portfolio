@@ -11,7 +11,6 @@ WHERE Feb.Quantity > 2
 customer revenue
 278	13.83
 
-
 ---------------
 
 SELECT DISTINCT product, SUM(quantity) as total
@@ -42,6 +41,74 @@ Vareebadd Phone	25
 LG Washing Machine	6
 LG Dryer	5
 
+---------------
+
+SELECT location, product, COUNT(orderid) as total_orders
+FROM JanSales
+WHERE location LIKE '%New York%'
+GROUP BY location
+HAVING total_orders > 2
+ORDER BY total_orders DESC
+LIMIT 10
+;
+
+location product total orders
+961 Jefferson St, New York City, NY 10001	USB-C Charging Cable	4
+916 Pine St, New York City, NY 10001	iPhone	3
+515 Lincoln St, New York City, NY 10001	USB-C Charging Cable	3
+148 Elm St, New York City, NY 10001	Google Phone	3
+
+---------------
+
+SELECT product, 
+        ROUND(SUM(quantity * price), 0) AS total_revenue,   
+        SUM(quantity) as total_ordered
+FROM FebSales
+WHERE LOWER(product) LIKE '%headphone%'
+GROUP BY product
+ORDER BY total_revenue DESC
+;
+
+product total revenue total ordered
+Apple Airpods Headphones	151950	1013
+Bose SoundSport Headphones	84392	844
+Wired Headphones	15371	1282
+
+---------------
+
+SELECT ROUND(SUM(quantity) * price / COUNT(acctnum),2 ) AS spend_per_account
+FROM Febsales f
+INNER JOIN customers c
+ON f.orderID=c.order_id
+WHERE length(orderid) = 6
+AND orderid <> 'Order ID'
+; 
+
+spend per account
+783.15
+
+---------------
+
+SELECT SUM(f.quantity) / COUNT(c.acctnum) AS quantity_per_account
+FROM Febsales f
+LEFT JOIN customers c
+ON f.orderID=c.order_id
+WHERE length(orderid) = 6
+AND orderid <> 'Order ID'
+; 
+
+quantity per account
+1
+
+---------------
+
+SELECT product,
+        SUM(quantity) * price AS total_revenue
+FROM JanSales
+;
+
+product total revenue
+iPhone	7607600
 
 ---------------
 

@@ -1,0 +1,68 @@
+SELECT artist_name, track_name, speechiness
+FROM Spotifydata
+ORDER BY speechiness DESC
+LIMIT 5;
+
+artist name track name speechiness popularity
+Bad Bunny	LA NOCHE DE ANOCHE	0.286 87
+Polo G	RAPSTAR	0.242 82
+Tiësto	The Business	0.232 88
+Lil Nas X	MONTERO (Call Me By Your Name)	0.22 90 
+Olivia Rodrigo	good 4 u	0.154 95
+
+---------------
+SELECT artist_name, COUNT(track_id) AS song_count
+FROM Spotifydata
+GROUP BY artist_name
+HAVING COUNT(track_id) > 1
+ORDER BY popularity DESC;
+
+artist name song count
+The Weeknd	2
+Måneskin	2
+The Kid LAROI	2
+Olivia Rodrigo	4
+Lil Nas X	2
+Dua Lipa	2
+Doja Cat	3
+Ariana Grande	2
+Bad Bunny	3
+BTS	2
+
+---------------
+SELECT 
+    AVG(popularity) AS avg_popularity,
+    AVG(danceability) AS avg_danceability,
+    AVG(energy) AS avg_energy,
+    AVG(acousticness) AS avg_acousticness,
+    AVG(tempo) AS avg_tempo
+FROM Spotifydata;
+
+avg populatirty avg danceability avg energy avg acousticness avg tempo
+86.75	0.68045833333333	0.64366666666667	0.25732770833333	120.96152083333334
+
+---------------
+WITH Top50 AS (
+    SELECT *
+    FROM Spotifydata
+    ORDER BY popularity DESC
+    LIMIT 50
+),
+AvgPopularity AS (
+    SELECT ROUND(AVG(popularity),2) AS avg_popularity
+    FROM Top50
+)
+SELECT artist_name, COUNT(track_id) AS song_count, ROUND(AVG(t.popularity), 2) AS avg_artist_popularity
+FROM Top50 t
+JOIN AvgPopularity a ON t.popularity >= a.avg_popularity
+GROUP BY artist_name
+HAVING COUNT(track_id) > 1
+ORDER BY avg_artist_popularity DESC;
+
+artist name song count avg artist popularity
+Olivia Rodrigo	4	92.25
+The Weeknd	2	91.5
+Måneskin	2	90.5
+Lil Nas X	2	90
+Doja Cat	3	89.33
+Bad Bunny	3	89.33

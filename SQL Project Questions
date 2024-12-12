@@ -1,0 +1,146 @@
+SELECT firstname, lastname, country
+FROM customers
+WHERE customerid IN (
+    SELECT customerid
+    FROM invoices
+    GROUP BY customerid
+    HAVING SUM(total) > 0
+)
+LIMIT 10;
+
+---
+firstname lastname country
+Luís	Gonçalves	Brazil
+Leonie	Köhler	Germany
+François	Tremblay	Canada
+Bjørn	Hansen	Norway
+František	Wichterlová	Czech Republic
+Helena	Holý	Czech Republic
+Astrid	Gruber	Austria
+Daan	Peeters	Belgium
+Kara	Nielsen	Denmark
+Eduardo	Martins	Brazil
+---
+
+SELECT FirstName, LastName, Country, TotalSpend
+FROM customers
+JOIN (
+    SELECT CustomerId, SUM(Total) AS TotalSpend
+    FROM invoices
+    GROUP BY CustomerId
+) AS CustomerSpending
+ON customers.CustomerId = CustomerSpending.CustomerId
+ORDER BY TotalSpend DESC
+LIMIT 10;
+
+---
+firstname lastname country totalspend
+Helena	Holý	Czech Republic	49.62
+Richard	Cunningham	USA	47.62
+Luis	Rojas	Chile	46.62
+Ladislav	Kovács	Hungary	45.62
+Hugh	O'Reilly	Ireland	45.62
+Julia	Barnett	USA	43.62
+Frank	Ralston	USA	43.62
+Fynn	Zimmermann	Germany	43.62
+Astrid	Gruber	Austria	42.62
+Victor	Stevens	USA	42.62
+---
+
+WITH CustomerSpending AS (
+    SELECT c.CustomerId, c.FirstName, c.LastName, c.Country, SUM(i.Total) AS TotalSpend
+    FROM customers c
+    JOIN invoices i ON c.CustomerId = i.CustomerId
+    GROUP BY c.CustomerId, c.FirstName, c.LastName, c.Country
+)
+SELECT Country, ROUND(SUM(TotalSpend), 2) AS Total_Revenue
+FROM CustomerSpending
+GROUP BY Country
+ORDER BY TotalRevenue DESC
+LIMIT 5;
+
+---
+Country Total_Revenue
+USA	523.06
+Canada	303.96
+France	195.1
+Brazil	190.1
+Germany	156.48
+---
+
+WITH CustomerSpending AS (
+    SELECT c.CustomerId, c.FirstName, c.LastName, c.Country, SUM(i.Total) AS TotalSpend
+    FROM customers c
+    JOIN invoices i ON c.CustomerId = i.CustomerId
+    GROUP BY c.CustomerId, c.FirstName, c.LastName, c.Country
+)
+SELECT 
+    CASE 
+        WHEN Country IN ('USA', 'Canada') THEN 'North America'
+        WHEN Country IN ('France', 'Germany', 'United Kingdom') THEN 'Europe'
+        WHEN Country IN ('Australia', 'New Zealand') THEN 'Oceania'
+        WHEN Country IN ('Brazil', 'Argentina') THEN 'South America'
+        ELSE 'Other'
+    END AS Region,
+    ROUND(SUM(TotalSpend), 2) AS TotalRevenue
+FROM CustomerSpending
+GROUP BY Region
+ORDER BY TotalRevenue DESC;
+
+---
+Region TotalRevenue
+North America	827.02
+Other	771.8
+Europe	464.44
+South America	227.72
+Oceania	37.62
+---
+
+SELECT 
+    c.firstname, 
+    c.lastname,
+    i.invoiceid,
+    i.invoicedate,
+    i.billingcountry
+FROM customers AS c
+INNER JOIN invoices AS i
+ON c.customerid = i.customerid
+WHERE i.billingcountry = 'Australia'
+ORDER BY i.invoicedate DESC
+LIMIT 10;
+
+---
+firstname lastname invoicedid invoicedate billingcountry
+Mark	Taylor	305	2012-08-31 00:00:00	Australia
+Mark	Taylor	250	2012-01-01 00:00:00	Australia
+Mark	Taylor	239	2011-11-21 00:00:00	Australia
+Mark	Taylor	118	2010-05-30 00:00:00	Australia
+Mark	Taylor	66	2009-10-09 00:00:00	Australia
+Mark	Taylor	44	2009-07-07 00:00:00	Australia
+Mark	Taylor	21	2009-04-04 00:00:00	Australia
+---
+
+SELECT 
+    t.name AS TrackName,
+    ar.name AS ArtistName,
+    ii.invoicelineid AS InvoiceLineID
+FROM tracks t
+INNER JOIN albums al ON t.albumid = al.albumid
+INNER JOIN artists ar ON al.artistid = ar.artistid
+INNER JOIN invoice_items ii ON t.trackid = ii.trackid
+LIMIT 10
+
+---
+TrackName ArtistName InvoiceLineID
+For Those About To Rock (We Salute You)	AC/DC	579
+Balls to the Wall	Accept	1
+Balls to the Wall	Accept	1154
+Fast As a Shark	Accept	1728
+Restless and Wild	Accept	2
+Princess of the Dawn	Accept	580
+Put The Finger On You	AC/DC	3
+Inject The Venom	AC/DC	4
+Inject The Venom	AC/DC	1155
+Snowballed	AC/DC	581
+---
+
